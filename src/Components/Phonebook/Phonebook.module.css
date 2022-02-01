@@ -1,0 +1,7 @@
+.bar {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  flex-direction: column;
+  align-items: center;
+}
