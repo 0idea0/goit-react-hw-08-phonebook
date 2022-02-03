@@ -1,30 +1,42 @@
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { authSelectors, authOperations } from '../../redux/auth';
-import defaultAvatar from './defaultAvatar.png';
-import styles from './UserMenu.module.css';
+import React from 'react';
+import s from './UserMenu.module.css';
+import avatar from './images/ava.png';
+import { useLogoutUserMutation } from '../../redux/auth/authSlice';
+import { useSelector } from 'react-redux';
+import { getName } from '../../redux/auth/auth-selector';
 
-export default function UserMenu() {
-  const dispatch = useDispatch();
-  const name = useSelector(authSelectors.getUsername);
-  const onLogout = useCallback(
-    () => dispatch(authOperations.logOut()),
-    [dispatch],
-  );
+function UserMenu() {
+  const name = useSelector(getName);
+  const [logoutUser] = useLogoutUserMutation();
+  console.log(name);
+
+  const logouClick = () => {
+    logoutUser('');
+  };
 
   return (
-    <div className={styles.container}>
+    <div className={s.Container}>
       <img
-        src={defaultAvatar}
-        alt="avatar"
-        width="32"
-        className={styles.avatar}
+        src={avatar}
+        alt=""
+        width="32
+      "
+        className={s.Avatar}
       />
-      <span className={styles.name}>Welcome, {name}</span>
-
-      <button type="button" onClick={onLogout}>
-        Exit
+      <span className={s.Name}>
+        Добро пожаловать!
+        {/* {name} */}
+      </span>
+      <button
+        type="button"
+        onClick={() => {
+          logouClick();
+        }}
+      >
+        Выйти
       </button>
     </div>
   );
 }
+
+export default UserMenu;
