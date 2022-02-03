@@ -1,27 +1,18 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
-import s from './Navigation.module.css';
 
-function AuthNav() {
+import s from './Navigation.module.css';
+import Typography from '@material-ui/core/Typography';
+
+function Navigation() {
   return (
-    <nav>
-      <NavLink
-        // axact
-        to="/"
-        className={s.Link}
-        // activeClassName={s.ActiveLink}
-      >
-        Главная
-      </NavLink>
-      <NavLink
-        to="/contacts"
-        className={s.Link}
-        // activeClassName={s.activeLink}
-      >
-        Страница контактов
+    <nav className={s.nav}>
+      <NavLink to="/" exact>
+        <Typography className={s.link} variant="h4">
+          Home
+        </Typography>
       </NavLink>
     </nav>
   );
 }
 
-export default AuthNav;
+export default Navigation;

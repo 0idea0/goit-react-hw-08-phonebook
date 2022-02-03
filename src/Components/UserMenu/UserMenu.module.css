@@ -1,13 +1,22 @@
-.Container {
+.container {
   display: flex;
   align-items: center;
+  margin-left: auto;
+  justify-content: center;
 }
 
-.Avatar {
-  margin-right: 4px;
-}
-
-.Name {
+.name {
   font-weight: 700;
-  margin-right: 12px;
+  margin-right: 20px;
+  color: white;
+  font-size: 18px;
+}
+.menu__item {
+  color: black;
+}
+
+@media screen and (max-width: 500px) {
+  .name {
+    display: none;
+  }
 }

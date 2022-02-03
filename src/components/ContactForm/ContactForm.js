@@ -1,18 +1,27 @@
 import { useState } from 'react';
-import { useAddContactMutation } from '../../redux/contacts/contactsSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { contactsOperations, contactsSelectors } from '../../redux/contacts';
+import { toast } from 'react-toastify';
+import NumberFormat from 'react-number-format';
+import Button from '@material-ui/core/Button';
+import LoaderComponent from '../LoaderComponent';
 import s from './ContactForm.module.css';
-
-export default function ContactForm({ contacts }) {
+import TextField from '@material-ui/core/TextField';
+function ContactForm({ onClose }) {
+  const dispatch = useDispatch();
+  const contacts = useSelector(contactsSelectors.getContacts);
+  const isLoading = useSelector(contactsSelectors.getLoading);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const [addContact] = useAddContactMutation();
 
   const handleChange = e => {
     const { name, value } = e.target;
+
     switch (name) {
       case 'name':
         setName(value);
         break;
+
       case 'number':
         setNumber(value);
         break;
@@ -22,53 +31,76 @@ export default function ContactForm({ contacts }) {
     }
   };
 
+  const checkRepeatName = name => {
+    return contacts.find(
+      contact => contact.name.toLowerCase() === name.toLowerCase(),
+    );
+  };
+
+  const checkRepeatNumber = number => {
+    return contacts.find(contact => contact.number === number);
+  };
+
+  const checkEmptyQuery = (name, number) => {
+    return name.trim() === '' || number.trim() === '';
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
-
-    const reLockInput = contacts.find(contact => contact.name === name);
-
-    if (reLockInput) {
-      alert('Такой контакт уже есть в списке');
-
-      return contacts;
+    if (checkRepeatName(name)) {
+      return toast(`${name} is already in the phonebook.`);
+    } else if (checkRepeatNumber(number)) {
+      return toast(`🤔 ${number} is already in the phonebook.`);
+    } else if (checkEmptyQuery(name, number)) {
+      return toast.info("Enter the contact's");
     } else {
-      addContact({ name, number });
-      setName('');
-      setNumber('');
+      dispatch(contactsOperations.addContact(name, number));
     }
+    resetInput();
+  };
+
+  const resetInput = () => {
+    setName('');
+    setNumber('');
+    onClose();
   };
 
   return (
-    <form onSubmit={handleSubmit} className={s.form}>
-      <label>
-        <input
-          className={s.roundedInput}
-          type="text"
-          name="name"
-          value={name}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          placeholder="Name:"
-          required
-          onChange={handleChange}
-        />
-      </label>
-      <label>
-        <input
-          className={s.roundedInput}
-          type="tel"
-          value={number}
-          name="number"
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          placeholder="Tel:"
-          required
-          onChange={handleChange}
-        />
-      </label>
-      <button type="submit" className={s.btnForm}>
+    <form className={s.form} onSubmit={handleSubmit}>
+      <TextField
+        label="Name"
+        variant="outlined"
+        color="primary"
+        type="text"
+        name="name"
+        fullWidth
+        value={name}
+        onChange={handleChange}
+        className={s.textField}
+      />
+      <TextField
+        label="Number"
+        variant="outlined"
+        color="primary"
+        type="phone"
+        name="number"
+        fullWidth
+        value={number}
+        onChange={handleChange}
+        className={s.textField}
+      />
+
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        fullWidth
+        type="submit"
+      >
         Add contact
-      </button>
+      </Button>
     </form>
   );
 }
+
+export default ContactForm;
