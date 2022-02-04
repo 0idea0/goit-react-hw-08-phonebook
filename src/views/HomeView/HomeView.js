@@ -1,10 +1,16 @@
-import React from 'react';
+import HomeIcon from '@material-ui/icons/Home';
 import s from './HomeView.module.css';
+import { Typography } from '@material-ui/core';
 
-export default function HomeView() {
+const HomeView = () => {
   return (
-    <div className={s.Container}>
-      <h1 className={s.Title}>Приветствуем вас в нашей телефонной книге!!!</h1>
+    <div className={s.wrapper}>
+      <HomeIcon color="primary" className={s.img} />
+      <Typography color="primary" variant="h3">
+        This is home for my contacts
+      </Typography>
     </div>
   );
-}
+};
+
+export default HomeView;

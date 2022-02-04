@@ -1,57 +1,82 @@
-import React, { useState } from 'react';
-import { useLoginUserMutation } from '../../redux/auth/authSlice';
-import s from '../RegisterView/RegisterView.module.css';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { authOperations, authSelectors } from '../../redux/auth';
+import { toast } from 'react-toastify';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import LoaderComponent from '../../components/LoaderComponent';
+import s from './LoginView.module.css';
 
 export default function LoginView() {
+  const dispatch = useDispatch();
+  const isLoading = useSelector(authSelectors.getLoading);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginUser] = useLoginUserMutation();
 
-  const handleChange = ({ target: { name, value } }) => {
+  const handleChange = e => {
+    const { name, value } = e.target;
+
     switch (name) {
       case 'email':
-        return setEmail(value);
+        setEmail(value);
+        break;
 
       case 'password':
-        return setPassword(value);
+        setPassword(value);
+        break;
 
       default:
         return;
     }
   };
 
-  const handelSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-
-    loginUser({ email, password });
+    if (email.trim() === '' || password.trim() === '') {
+      return toast.error(' Please fill in all fields!');
+    }
+    dispatch(authOperations.logIn({ email, password }));
     setEmail('');
     setPassword('');
   };
 
   return (
-    <div>
-      <form onSubmit={handelSubmit} className={s.Form} autoComplete="off">
-        <label className={s.Label}>
-          Почта
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={handleChange}
-          />
-        </label>
-        <label className={s.Label}>
-          Пароль
-          <input
-            type="password"
-            name="password"
-            value={password}
-            onChange={handleChange}
-          />
-        </label>
+    <form onSubmit={handleSubmit} className={s.form} autoComplete="off">
+      <TextField
+        label="Email"
+        variant="outlined"
+        color="primary"
+        type="email"
+        name="email"
+        value={email}
+        onChange={handleChange}
+        className={s.textField}
+      />
 
-        <button type="submit">Войти</button>
-      </form>
-    </div>
+      <TextField
+        label="Password"
+        variant="outlined"
+        color="primary"
+        type="password"
+        name="password"
+        value={password}
+        onChange={handleChange}
+        className={s.textField}
+      />
+
+      {!isLoading && (
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          size="large"
+          type="submit"
+        >
+          Log in
+        </Button>
+      )}
+
+      {isLoading && <LoaderComponent />}
+    </form>
   );
 }
